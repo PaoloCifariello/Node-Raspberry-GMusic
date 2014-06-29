@@ -1,0 +1,25 @@
+{
+  "name": "RaspGMusic",
+  "description": "Listen to Google Music on Raspberry Pi",
+  "keywords": [
+    "google",
+    "music",
+    "api",
+    "javascript",
+    "Raspberry Pi"
+  ],
+  "author": {
+    "name": "Paolo Cifariello",
+    "email": "paolocifa@gmail.com"
+  },
+  "dependencies": {
+    "googlemusicapi": "",
+    "express": "", 
+    "player": "",
+    "nedb": ""
+  },
+  "main": "app.js",
+  
+  "version": "0.0.1",
+  "readmeFilename": "README.md"
+}
