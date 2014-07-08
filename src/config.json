@@ -1,0 +1,11 @@
+{
+    "username": "",
+    "password": "",
+  
+    "refresh_on_startup": false,
+    "db_location": "/../DB/library.db",
+  
+    "port": 3000,
+    
+    "socket_location": "/../com/comsck"
+}

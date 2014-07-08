@@ -1,1 +1,4 @@
-node_modules
+src/node_modules
+src/com/*
+src/DB/*
+src/py_modules/*.pyc

@@ -1,9 +1,0 @@
-{
-  "username": "",
-  "password": "",
-  
-  "refresh_on_startup": true,
-  "db_location": "./DB/",
-  
-  "port": 3000
-}

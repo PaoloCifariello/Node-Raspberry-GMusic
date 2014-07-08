@@ -13,10 +13,13 @@
     "email": "paolocifa@gmail.com"
   },
   "dependencies": {
-    "googlemusicapi": "",
     "express": "", 
     "player": "",
-    "nedb": ""
+    "jade": ""
+  },
+  "repository" : { 
+  	"type" : "git",
+  	"url" : "http://github.com/PaoloCifariello/Node-Raspberry-GMusic.git"
   },
   "main": "app.js",
   
