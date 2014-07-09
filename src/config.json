@@ -2,8 +2,8 @@
     "username": "",
     "password": "",
   
-    "refresh_on_startup": false,
-    "db_location": "/../DB/library.db",
+    "refresh_on_startup": true,
+    "db_location": "/../DB/",
   
     "port": 3000,
     

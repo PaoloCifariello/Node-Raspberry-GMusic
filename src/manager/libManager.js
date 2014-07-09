@@ -7,7 +7,7 @@ function LibraryManager(config) {
     this.__refreshed = true;
   }
   
-  this.__lookupDB(config.db_location);
+  this.__lookupDB(config.db_location + 'library.db');
 }
 
 
@@ -60,9 +60,9 @@ LibraryManager.prototype.__test = function(el, opt) {
 
 LibraryManager.prototype.__lookupDB = function(path) {
     this.library = {
-        tracks: require(__dirname + '/../DB/tracks.json'),
-        artists: require(__dirname + '/../DB/artists.json'),
-        albums: require(__dirname + '/../DB/albums.json')
+        tracks: require(__dirname + this.config.db_location + 'tracks.json'),
+        artists: require(__dirname + this.config.db_location + 'artists.json'),
+        albums: require(__dirname + this.config.db_location + 'albums.json')
     };
 }
 

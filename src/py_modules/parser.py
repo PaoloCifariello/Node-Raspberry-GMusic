@@ -1,5 +1,3 @@
-import dataset
-
 from models import *
 
 class Parser:
@@ -11,8 +9,31 @@ class Parser:
         self.artists = []
         self.albums = []
         self.tracks = []
+        
+    def parse(self, db, data):
 
-    def insert(self, db):
+        for song in data:
+            track = Track()
+            
+            artist = self.__parse_artist(song)
+            track.artistId = artist.gid
+
+            album = self.__parse_album(song, artist)     
+            track.albumId = album.gid
+
+            track.name = song['title']
+            track.gid = song['id']
+            
+            try:
+                track.track_no = song['trackNumber']
+            except:
+                track.track_no = 0
+
+            self.tracks.append(track)
+
+        self.__insert(db)
+
+    def __insert(self, db):
         tr = db.create_table('tracks', primary_id='gid', primary_type='String')
         ar = db.create_table('artists', primary_id='gid', primary_type='String')
         al = db.create_table('albums', primary_id='gid', primary_type='String')
@@ -29,42 +50,8 @@ class Parser:
         print('Library Manager: Inserted ' + str(len(self.tracks)) + ' tracks');
         print('Library Manager: Inserted ' + str(len(self.artists)) + ' artists');
         print('Library Manager: Inserted ' + str(len(self.albums)) + ' albums');
-    
-    def export(self, db):
-        tracks = db['tracks'].all()
-        dataset.freeze(tracks, format='json', filename='DB/tracks.json')
-
-        artists = db['artists'].all()
-        dataset.freeze(artists, format='json', filename='DB/artists.json')
-
-        albums = db['albums'].all()
-        dataset.freeze(albums, format='json', filename='DB/albums.json')
         
-    def parse(self, db, data):
-
-        for song in data:
-            track = Track()
-            
-            artist = self.parse_artist(song)
-            track.artistId = artist.gid
-
-            album = self.parse_album(song, artist)     
-            track.albumId = album.gid
-
-            track.name = song['title']
-            track.gid = song['id']
-            
-            try:
-                track.track_no = song['trackNumber']
-            except:
-                track.track_no = 0
-
-            self.tracks.append(track)
-
-        self.insert(db)
-        self.export(db)
-
-    def parse_artist(self, song):
+    def __parse_artist(self, song):
 
         if song['albumArtist'] == "":
             if song['artist'] == "":
@@ -74,7 +61,7 @@ class Parser:
         else:
             a = song['albumArtist']
 
-        artist = self.is_present_artist(a)
+        artist = self.__is_present_artist(a)
         
         if artist == None:
             self.artistId +=1
@@ -90,9 +77,9 @@ class Parser:
 
         return artist
 
-    def parse_album(self, song, artist):
+    def __parse_album(self, song, artist):
 
-        album = self.is_present_album(song['album'], artist.gid)
+        album = self.__is_present_album(song['album'], artist.gid)
 
         if album == None:
             self.albumId += 1
@@ -113,14 +100,14 @@ class Parser:
 
         return album
     
-    def is_present_artist(self, name):
+    def __is_present_artist(self, name):
         for artist in self.artists:
             if artist.name == name:
                 return artist
 
         return None
 
-    def is_present_album(self, album_name, artistId):
+    def __is_present_album(self, album_name, artistId):
         for album in self.albums:
             if album.name == album_name and album.artistId == artistId:
                 return album

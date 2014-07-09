@@ -3,6 +3,8 @@ import pickle, dataset, os, sys
 from gmusicapi import Mobileclient
 from parser import Parser
 
+import dataset
+
 class LibraryManager:
 
     def __init__(self, path, username, password):
@@ -13,23 +15,36 @@ class LibraryManager:
         self.GPASS = password
     
 
-    # Remove old database and creates new one
+        # Remove old database and creates new one
         self.init_db(path)
-
+        # Getting data from Google
+        data = self.__get_data()
+        # Insert data in DB
+        self.parser.parse(self.db, data)
+        # Export DB
+        self.export()
+            
+        
     """ Delete old database and creates the new one """
     def init_db(self, path):
         try:
-            os.remove(path)
+            os.remove(path + 'library.db')
         except OSError:
             pass
 
-        data = self.get_data()
+        self.db = dataset.connect('sqlite:////' + self.db_path + 'library.db')
+        
+    def export(self):
+        tracks = self.db['tracks'].all()
+        dataset.freeze(tracks, format='json', filename=self.db_path + 'tracks.json')
 
-        self.db = dataset.connect('sqlite:////' + self.db_path)
-        self.parser.parse(self.db, data)
+        artists = self.db['artists'].all()
+        dataset.freeze(artists, format='json', filename=self.db_path + 'artists.json')
 
-
-    def get_data(self):
+        albums = self.db['albums'].all()
+        dataset.freeze(albums, format='json', filename=self.db_path + 'albums.json')
+        
+    def __get_data(self):
         mobileapi = Mobileclient()
         mobileapi.login(self.GUSER, self.GPASS)
         library = mobileapi.get_all_songs()
