@@ -47,7 +47,7 @@ class UrlGetter:
                 return
             
             conn.send(stream_url[0])
-            print(stream_url[0])
+            print('url_getter.py: Ottenuta URL -> ' + stream_url[0])
         
         conn.close()
 

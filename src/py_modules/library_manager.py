@@ -32,7 +32,7 @@ class LibraryManager:
         except OSError:
             pass
 
-        self.db = dataset.connect('sqlite:////' + self.db_path + 'library.db')
+        self.db = dataset.connect('sqlite:///' + self.db_path + 'library.db')
         
     def export(self):
         tracks = self.db['tracks'].all()

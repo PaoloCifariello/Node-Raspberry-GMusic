@@ -1,16 +1,11 @@
-var net = require('net');
+var net = require('net'),
+    Player = require('player');
 
 function PlayerManager(config) {
-  
-  this.config = config;
-  this.python = null;
+  this.config = config, this.python = null, this.socket = new net.Socket(), this.player = undefined;
+};
 
-  this._initPy();
-  this.socket = new net.Socket();
-  
-}
-
-PlayerManager.prototype._initPy = function() {
+PlayerManager.prototype.initPy = function() {
 	
     var python = this.python = require('child_process').spawn(
     'python',
@@ -32,32 +27,44 @@ PlayerManager.prototype._initPy = function() {
     python.on('close', function(code) {
         console.log('Python exited :( ' + code);
     });
-}
+};
 
-PlayerManager.prototype.getStreamUrl = function(id, callback, ntry) {
-    var socket = this.socket,
+PlayerManager.prototype.getStreamUrl = function(id, callback) {
+    var socket = this.socket = new net.Socket(),
         that = this;
-    
-    console.log(__dirname + this.config.socket_location);
-    
+  
     socket.connect(__dirname + this.config.socket_location);
     socket.write(id);
-    
+    console.log('waiting for url');
     socket.on('error', function(data) {
         socket.end();
         console.log('PlayerManager: socket error: ' + data);
     });
     
     socket.on('data', function(data) {
-        socket.end();
-        callback(data.toLocaleString());
+      callback(data.toLocaleString());
+      socket.end();
     });
-}
+};
 
 PlayerManager.prototype.exit = function() {
     this.python.kill();
-}
+};
 
-module.exports = function(config) { 
+PlayerManager.prototype.play = function(id) {
+  var that = this;
+
+  this.getStreamUrl(id, function(url) {
+    if (typeof that.player === 'undefined') {
+      that.player = new Player(url);
+      that.player.play();
+    } else {
+      that.player.add(url);
+      that.player.next();
+    }
+  });
+};
+
+module.exports = function(config) {
   return new PlayerManager(config);
-}
+};

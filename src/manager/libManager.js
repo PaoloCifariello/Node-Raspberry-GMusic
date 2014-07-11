@@ -1,13 +1,29 @@
 
 function LibraryManager(config) {
   this.config = config;
+	this.basePath = __dirname;
+}
+
+LibraryManager.prototype.init = function(callback) {
+  var that = this;
+	
+	if(this.config.refresh_on_startup) {
+		
+		this.__refreshLibrary(function(){
+			that.__lookupDB();
+			
+			if (typeof callback === 'function')
+				callback();
+		});
+	
+		this.__refreshed = true;
   
-  if(config.refresh_on_startup) {
-    this.__refreshLibrary();
-    this.__refreshed = true;
-  }
-  
-  this.__lookupDB(config.db_location + 'library.db');
+	} else {
+		this.__lookupDB();
+		
+		if (typeof callback === 'function')
+			callback();
+	}
 }
 
 
@@ -58,11 +74,11 @@ LibraryManager.prototype.__test = function(el, opt) {
     return true;
 }
 
-LibraryManager.prototype.__lookupDB = function(path) {
-    this.library = {
-        tracks: require(__dirname + this.config.db_location + 'tracks.json'),
-        artists: require(__dirname + this.config.db_location + 'artists.json'),
-        albums: require(__dirname + this.config.db_location + 'albums.json')
+LibraryManager.prototype.__lookupDB = function() {
+	this.library = {
+        tracks: require(this.basePath + this.config.db_location + 'tracks.json'),
+        artists: require(this.basePath + this.config.db_location + 'artists.json'),
+        albums: require(this.basePath + this.config.db_location + 'albums.json')
     };
 }
 

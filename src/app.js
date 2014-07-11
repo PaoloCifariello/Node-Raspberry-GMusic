@@ -1,6 +1,5 @@
 /* Librerie utilizzate */
-var Player = require('player'),
-    express = require('express');
+var express = require('express');
 
 /* Configurazione */
 var config = require('./config.json');
@@ -13,7 +12,11 @@ var app = express();
 
 /* Qui parte l'applicazione */
 setProcessHandler();
-initApp();
+
+libraryManager.init(function() {
+  playerManager.initPy();
+  initApp();
+});
 
 function initApp() {
     //app.engine('jade', require('jade').__express);
@@ -33,13 +36,21 @@ function initApp() {
     });
     
     app.get('/tracks/:id', function(req, res){
-        playerManager.getStreamUrl(req.params.id, function(url) {
-            player = new Player(url);
-            player.play();
-            res.render('play', { 
-                track: libraryManager.get('tracks', { gid: req.params.id})
-            });  
+      var id = req.params.id;
+      
+      if(typeof id === 'undefined') {
+        res.render('play', {
+          track: {name:'Error'}
         });
+      } else {
+        var trk = libraryManager.get('tracks', { gid: id})[0];
+
+        res.render('play', { 
+          track: trk
+        });
+        
+        playerManager.play(id);
+      }
     });
     
     app.listen(8000);
